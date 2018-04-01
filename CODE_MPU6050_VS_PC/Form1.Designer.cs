@@ -45,6 +45,7 @@
             this.ComBchedo = new System.Windows.Forms.ComboBox();
             this.BtLoad = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
+            this.drawTimer = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.SuspendLayout();
@@ -202,6 +203,10 @@
             this.label5.TabIndex = 15;
             this.label5.Text = "Tên File";
             // 
+            // drawTimer
+            // 
+            this.drawTimer.Tick += new System.EventHandler(this.drawTimer_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -243,6 +248,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox ComBchedo;
+        private System.Windows.Forms.Timer drawTimer;
     }
 }
 

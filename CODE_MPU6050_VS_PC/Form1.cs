@@ -38,33 +38,18 @@ namespace GiaoTiepMpu6050
 
         // Full path load file
         string fullPathFile;
-        string[] fileData = {};
+        string[] fileData;
+        int dataIndex = 0;
 
         /*Danh sách hàm tạo bởi người dùng*/
         private delegate void R_Data(string s);
-        private void Load_Data(string s)
+        private void Load_Data()
         {
+            ClearZedGraph();
+            Console.WriteLine(fullPathFile);
             if (!File.Exists(fullPathFile)){
-                File.WriteAllLines(fullPathFile, fileData);
             }
-            string[] readText = File.ReadAllLines(fullPathFile);
-            foreach (string s in readText)
-            {
-                Console.WriteLine(s);
-            }
-            /*if(TexBNhan.InvokeRequired)
-            {
-                R_Data sd = new R_Data(Load_Data);
-                //TexBNhan.Invoke(sd, new object[] { s });
-            }
-            else
-            {
-                //if(TexBNhan.Text.Length>100000)
-                //{
-                //    TexBNhan.Text = "";
-                //}
-                //TexBNhan.Text = s; //TexBNhan.Text +
-            }*/
+            fileData = File.ReadAllLines(fullPathFile);
         }
         private void ClearZedGraph()
         {
@@ -208,8 +193,10 @@ namespace GiaoTiepMpu6050
                 else modefile = true;
                 TexBTenfile.Enabled = false;
                 BtLoad.Enabled = false;
+                //Alow drawTimer run
+                drawTimer.Enabled = true;
                 //timer1.Enabled = true;
-               // Datetime_Start=DateTime.Now
+                // Datetime_Start=DateTime.Now
                 Datetime_Now = DateTime.Now ;
                 /*
                 String filepath = System.IO.Directory.GetCurrentDirectory() + @"\data\"+TexBTenfile.Text+".txt";
@@ -369,7 +356,8 @@ namespace GiaoTiepMpu6050
             loadfile.RestoreDirectory = true;
             if (loadfile.ShowDialog() == DialogResult.OK)
             {
-                fullPathFile = loadfile.InitialDirectory + loadfile.FileName;
+                fullPathFile = loadfile.FileName;
+                Load_Data();/*
                 //TexBTenfile.Text = loadfile.InitialDirectory + loadfile.FileName;
                 TexBTenfile.Text = System.IO.Path.GetFileName(loadfile.FileName);
                 ZedGraphGiaToc.IsShowPointValues = true;
@@ -387,7 +375,27 @@ namespace GiaoTiepMpu6050
                     }
                     catch { }
                 }
-                while (dataread != null);
+                while (dataread != null);*/
+            }
+        }
+
+        private void drawTimer_Tick(object sender, EventArgs e)
+        {
+            if(dataIndex < fileData.Length)
+            {
+                string dataLine = fileData[dataIndex++];
+                
+                if (dataLine != "")
+                {
+                    Console.WriteLine(dataLine);
+                    string[] araystring = dataLine.Split('\t');
+                    // ve do thi 6 diem
+                    draw(Convert.ToDouble(araystring[1]), Convert.ToDouble(araystring[2]), Convert.ToDouble(araystring[3]), Convert.ToDouble(araystring[4]), Convert.ToDouble(araystring[5]), Convert.ToDouble(araystring[6]), Convert.ToDouble(araystring[0]));
+                }
+            }
+            else
+            {
+                drawTimer.Enabled = false;
             }
         }
     }
