@@ -15,15 +15,17 @@ namespace GiaoTiepMpu6050
 {
     public partial class Form1 : Form
     {
+        // Đây là hàm khởi tạo
         public Form1()
         {
             InitializeComponent();
         }
-        int start_mode = 0; // cho phép ve do thi 
+        /*Danh sách biến*/
+        // cho phép ve do thi 
+        int start_mode = 0;
         bool modefile = false;
-        bool Dothi = true;
-        private int millisecond=0; 
-        DateTime Datetime_Now =new DateTime();
+        private int millisecond = 0;
+        DateTime Datetime_Now = new DateTime();
         //DateTime Datetime_Start = new DateTime();
         //DateTime Datetime_Delay = new DateTime();
         //TimeSpan Time_Delay = new TimeSpan();
@@ -34,7 +36,86 @@ namespace GiaoTiepMpu6050
         RollingPointPairList List_Pitch_y = new RollingPointPairList(60000);
         RollingPointPairList List_Yaw_z = new RollingPointPairList(60000);
 
-        
+        // Full path load file
+        string fullPathFile;
+        string[] fileData = {};
+
+        /*Danh sách hàm tạo bởi người dùng*/
+        private delegate void R_Data(string s);
+        private void Load_Data(string s)
+        {
+            if (!File.Exists(fullPathFile)){
+                File.WriteAllLines(fullPathFile, fileData);
+            }
+            string[] readText = File.ReadAllLines(fullPathFile);
+            foreach (string s in readText)
+            {
+                Console.WriteLine(s);
+            }
+            /*if(TexBNhan.InvokeRequired)
+            {
+                R_Data sd = new R_Data(Load_Data);
+                //TexBNhan.Invoke(sd, new object[] { s });
+            }
+            else
+            {
+                //if(TexBNhan.Text.Length>100000)
+                //{
+                //    TexBNhan.Text = "";
+                //}
+                //TexBNhan.Text = s; //TexBNhan.Text +
+            }*/
+        }
+        private void ClearZedGraph()
+        {
+            ZedGraphGiaToc.GraphPane.CurveList.Clear(); // Xóa đường
+            ZedGraphGiaToc.GraphPane.GraphObjList.Clear(); // Xóa đối tượng
+
+            ZedGraphGiaToc.AxisChange();
+            ZedGraphGiaToc.Invalidate();
+
+            GraphPane myPane = ZedGraphGiaToc.GraphPane;
+            //myPane.Title.Text = "Đồ thị dữ liệu theo thời gian";
+            //myPane.XAxis.Title.Text = "Thời gian (s)";
+            //myPane.YAxis.Title.Text = "Dữ liệu";
+
+            //RollingPointPairList list = new RollingPointPairList(60000);
+            //LineItem curve = myPane.AddCurve("Dữ liệu", list, Color.Red, SymbolType.None);
+
+            //myPane.XAxis.Scale.Min = 0;
+            //myPane.XAxis.Scale.Max = 30;
+            // myPane.XAxis.Scale.MinorStep = 1;
+            //myPane.XAxis.Scale.MajorStep = 5;
+            //myPane.YAxis.Scale.Min = -100;
+            //myPane.YAxis.Scale.Max = 100;
+
+            //ZedGraphGiaToc.AxisChange();
+
+            myPane.Title.Text = " Gia tốc, góc quay";
+            myPane.XAxis.Title.Text = "Thời Gian, giây";
+            myPane.YAxis.Title.Text = "Gia tốc,vân tốc góc, góc quay";
+            List_Ax.Clear();
+            List_Ay.Clear();
+            List_Az.Clear();
+            List_Roll_x.Clear();
+            List_Pitch_y.Clear();
+            List_Yaw_z.Clear();
+            LineItem Ax = myPane.AddCurve("Roll x", List_Ax, Color.Blue, SymbolType.None);
+            LineItem Ay = myPane.AddCurve("Pitch y", List_Ay, Color.Red, SymbolType.None);
+            LineItem Az = myPane.AddCurve("Yaw z", List_Az, Color.Yellow, SymbolType.None);
+            LineItem Roll_x = myPane.AddCurve("Ax", List_Roll_x, Color.Violet, SymbolType.None);
+            LineItem Pitch_y = myPane.AddCurve("Ay", List_Pitch_y, Color.Tomato, SymbolType.None);
+            LineItem Yaw_z = myPane.AddCurve("Az", List_Yaw_z, Color.Turquoise, SymbolType.None);
+
+            myPane.XAxis.Scale.Min = 0;
+            myPane.XAxis.Scale.Max = 10;
+            myPane.YAxis.Scale.Min = -3;
+            myPane.YAxis.Scale.Max = 3;
+            myPane.XAxis.Scale.MinorStep = 1;
+            myPane.XAxis.Scale.MajorStep = 1;
+            ZedGraphGiaToc.AxisChange();
+        }
+        /*Danh sách hàm tạo bởi Form*/
         private void Form1_Load(object sender, EventArgs e)
         {
             TexBTenfile.Text = "test";
@@ -57,7 +138,7 @@ namespace GiaoTiepMpu6050
             ComBchedo.Items.Add("Chỉ vẽ đồ thị");
             ComBchedo.Items.Add("Vẽ đồ thị và ghi file");
             ComBchedo.SelectedItem = "Chỉ vẽ đồ thị";
-               // Array.Sort(portnames);
+            // Array.Sort(portnames);
             //ComBPort.Items.AddRange(portnames);
             // Do Thi 
             //ZedGraphGocQuay.GraphPane.Title.Text ="Đồ Thị Góc Quay";
@@ -89,9 +170,6 @@ namespace GiaoTiepMpu6050
             //textBox1.Text = k.ToString();
             //textBox2.Text = n.ToString();
         }
-        
-
-       
 
         private void BTKetNoi_Click(object sender, EventArgs e)
         {
@@ -133,6 +211,7 @@ namespace GiaoTiepMpu6050
                 //timer1.Enabled = true;
                // Datetime_Start=DateTime.Now
                 Datetime_Now = DateTime.Now ;
+                /*
                 String filepath = System.IO.Directory.GetCurrentDirectory() + @"\data\"+TexBTenfile.Text+".txt";
                 FileStream fs = new FileStream(filepath, FileMode.Create);
                 StreamWriter sWriter = new StreamWriter(fs, Encoding.UTF8);
@@ -140,24 +219,20 @@ namespace GiaoTiepMpu6050
                 sWriter.Flush();
                 //sWriter.WriteLine
                 fs.Close();
+                */
                 start_mode = 1;
                 BTStart.Text = "Dừng";
-                
             }
             else
             {
                 //timer1.Enabled = false;
                 start_mode = 0;
-                
                 TexBTenfile.Enabled = true;
                 BtLoad.Enabled = true;
                 BTStart.Text = "Bắt đầu";
                 ZedGraphGiaToc.IsShowPointValues = true;
-                
             }
-
         }
-        
 
         private void dataReceive(object sender, SerialDataReceivedEventArgs e)
         {
@@ -167,7 +242,8 @@ namespace GiaoTiepMpu6050
                 try
                 {
                     s = serialPort.ReadTo("\r\n");//ReadExisting();
-                    double datet = ((TimeSpan)(DateTime.Now - Datetime_Now)).TotalMilliseconds; // tính khoảng thời gian
+                    // tính khoảng thời gian
+                    double datet = ((TimeSpan)(DateTime.Now - Datetime_Now)).TotalMilliseconds;
                     datet = Math.Round(datet / 1000, 3);
 
                     
@@ -194,25 +270,6 @@ namespace GiaoTiepMpu6050
           
         }
 
-        private delegate void R_Data(string s);
-        private void Load_Data(string s)
-        {
-            /*if(TexBNhan.InvokeRequired)
-            {
-                R_Data sd = new R_Data(Load_Data);
-                //TexBNhan.Invoke(sd, new object[] { s });
-            }
-            else
-            {
-                //if(TexBNhan.Text.Length>100000)
-                //{
-                //    TexBNhan.Text = "";
-                //}
-                //TexBNhan.Text = s; //TexBNhan.Text +
-
-            }*/
-        }
-
         private void BtGui_Click(object sender, EventArgs e)
         {
             int millisecond = DateTime.Now.Millisecond;
@@ -221,7 +278,6 @@ namespace GiaoTiepMpu6050
             //timer1.Enabled = false;
         }
 
-        double i = 0.000;
         private void timer1_Tick(object sender, EventArgs e)
         {
             millisecond = DateTime.Now.Millisecond - millisecond;
@@ -231,10 +287,9 @@ namespace GiaoTiepMpu6050
             //Load_Data(datet.ToString());
             //i += 0.1;
             draw(10, 13, 15, 17, 19, 20, datet);
-          
         }
 
-        // vẽ đồ thị ;
+        // vẽ đồ thị
         private void draw(double Data_AX,double Data_AY, double Data_AZ, double Data_Roll_x, double Data_Pitch_y, double Data_Yaw_z, double time)
         {
             LineItem Curve_AX = ZedGraphGiaToc.GraphPane.CurveList[0] as LineItem; // khoi tao biến edit line 0 
@@ -290,7 +345,7 @@ namespace GiaoTiepMpu6050
                 zg.Refresh();
             }
         }
-
+        // end ve do thi
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
@@ -314,6 +369,8 @@ namespace GiaoTiepMpu6050
             loadfile.RestoreDirectory = true;
             if (loadfile.ShowDialog() == DialogResult.OK)
             {
+                fullPathFile = loadfile.InitialDirectory + loadfile.FileName;
+                //TexBTenfile.Text = loadfile.InitialDirectory + loadfile.FileName;
                 TexBTenfile.Text = System.IO.Path.GetFileName(loadfile.FileName);
                 ZedGraphGiaToc.IsShowPointValues = true;
                 //textBox1.Text = loadfile.FileName.ToString();
@@ -333,59 +390,5 @@ namespace GiaoTiepMpu6050
                 while (dataread != null);
             }
         }
-        private void ClearZedGraph()
-        {
-            ZedGraphGiaToc.GraphPane.CurveList.Clear(); // Xóa đường
-            ZedGraphGiaToc.GraphPane.GraphObjList.Clear(); // Xóa đối tượng
-
-            ZedGraphGiaToc.AxisChange();
-            ZedGraphGiaToc.Invalidate();
-
-            GraphPane myPane = ZedGraphGiaToc.GraphPane;
-            //myPane.Title.Text = "Đồ thị dữ liệu theo thời gian";
-            //myPane.XAxis.Title.Text = "Thời gian (s)";
-            //myPane.YAxis.Title.Text = "Dữ liệu";
-
-            //RollingPointPairList list = new RollingPointPairList(60000);
-            //LineItem curve = myPane.AddCurve("Dữ liệu", list, Color.Red, SymbolType.None);
-
-            //myPane.XAxis.Scale.Min = 0;
-            //myPane.XAxis.Scale.Max = 30;
-           // myPane.XAxis.Scale.MinorStep = 1;
-            //myPane.XAxis.Scale.MajorStep = 5;
-            //myPane.YAxis.Scale.Min = -100;
-            //myPane.YAxis.Scale.Max = 100;
-
-            //ZedGraphGiaToc.AxisChange();
-
-
-
-            myPane.Title.Text = " Gia tốc, góc quay";
-            myPane.XAxis.Title.Text = "Thời Gian, giây";
-            myPane.YAxis.Title.Text = "Gia tốc,vân tốc góc, góc quay";
-            List_Ax.Clear();
-            List_Ay.Clear();
-            List_Az.Clear();
-            List_Roll_x.Clear();
-            List_Pitch_y.Clear();
-            List_Yaw_z.Clear();
-            LineItem Ax = myPane.AddCurve("Roll x", List_Ax, Color.Blue, SymbolType.None);
-            LineItem Ay = myPane.AddCurve("Pitch y", List_Ay, Color.Red, SymbolType.None);
-            LineItem Az = myPane.AddCurve("Yaw z", List_Az, Color.Yellow, SymbolType.None);
-            LineItem Roll_x = myPane.AddCurve("Ax", List_Roll_x, Color.Violet, SymbolType.None);
-            LineItem Pitch_y = myPane.AddCurve("Ay", List_Pitch_y, Color.Tomato, SymbolType.None);
-            LineItem Yaw_z = myPane.AddCurve("Az", List_Yaw_z, Color.Turquoise, SymbolType.None);
-
-            myPane.XAxis.Scale.Min = 0;
-            myPane.XAxis.Scale.Max = 10;
-            myPane.YAxis.Scale.Min = -3;
-            myPane.YAxis.Scale.Max = 3;
-            myPane.XAxis.Scale.MinorStep = 1;
-            myPane.XAxis.Scale.MajorStep = 1;
-            ZedGraphGiaToc.AxisChange();
-        }
-
-        
-       
     }
 }
