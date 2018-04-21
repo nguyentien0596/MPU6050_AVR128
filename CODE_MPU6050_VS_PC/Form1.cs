@@ -33,8 +33,8 @@ namespace GiaoTiepMpu6050
         RollingPointPairList List_Roll_x = new RollingPointPairList(60000); //List_Roll_x List_Pitch_y  List_Yaw_z
         RollingPointPairList List_Pitch_y = new RollingPointPairList(60000);
         RollingPointPairList List_Yaw_z = new RollingPointPairList(60000);
+        RollingPointPairList List_Accel = new RollingPointPairList(60000);
 
-        
         private void Form1_Load(object sender, EventArgs e)
         {
             TexBTenfile.Text = "test";
@@ -67,12 +67,13 @@ namespace GiaoTiepMpu6050
             ZedGraphGiaToc.GraphPane.XAxis.Title.Text="Thời Gian (giây)";
             ZedGraphGiaToc.GraphPane.YAxis.Title.Text = "Gia tốc (g), góc quay (Rad)";
 
-            LineItem Ax = ZedGraphGiaToc.GraphPane.AddCurve("Roll x", List_Ax, Color.Blue, SymbolType.None);
-            LineItem Ay = ZedGraphGiaToc.GraphPane.AddCurve("Pitch y", List_Ay, Color.Red, SymbolType.None);
-            LineItem Az = ZedGraphGiaToc.GraphPane.AddCurve("Yaw z", List_Az, Color.Yellow, SymbolType.None);
-            LineItem Roll_x = ZedGraphGiaToc.GraphPane.AddCurve("Ax", List_Roll_x, Color.Violet, SymbolType.None);
-            LineItem Pitch_y = ZedGraphGiaToc.GraphPane.AddCurve("Ay", List_Pitch_y, Color.Tomato, SymbolType.None);
-            LineItem Yaw_z = ZedGraphGiaToc.GraphPane.AddCurve("Az", List_Yaw_z, Color.Turquoise, SymbolType.None);
+            LineItem Ax = ZedGraphGiaToc.GraphPane.AddCurve("Ax", List_Ax, Color.Blue, SymbolType.None);
+            LineItem Ay = ZedGraphGiaToc.GraphPane.AddCurve("Ay", List_Ay, Color.Red, SymbolType.None);
+            LineItem Az = ZedGraphGiaToc.GraphPane.AddCurve("Az", List_Az, Color.Yellow, SymbolType.None);
+            LineItem Roll_x = ZedGraphGiaToc.GraphPane.AddCurve("Pitch_y", List_Roll_x, Color.Violet, SymbolType.None);
+            LineItem Pitch_y = ZedGraphGiaToc.GraphPane.AddCurve("Roll_x", List_Pitch_y, Color.Tomato, SymbolType.None);
+            LineItem Yaw_z = ZedGraphGiaToc.GraphPane.AddCurve("Yaw_z", List_Yaw_z, Color.Turquoise, SymbolType.None);
+            LineItem Accel = ZedGraphGiaToc.GraphPane.AddCurve("Accel", List_Accel, Color.Brown, SymbolType.None);
 
             ZedGraphGiaToc.IsShowPointValues = false;
             ZedGraphGiaToc.GraphPane.XAxis.Scale.Min = 0;
@@ -172,7 +173,7 @@ namespace GiaoTiepMpu6050
 
                     
                     string[] araystring = s.Split(' ');
-                    draw(Convert.ToDouble(araystring[0]), Convert.ToDouble(araystring[1]), Convert.ToDouble(araystring[2]), Convert.ToDouble(araystring[3]), Convert.ToDouble(araystring[4]), Convert.ToDouble(araystring[5]), datet); // ve do thi 6 diem 
+                    draw(Convert.ToDouble(araystring[0]), Convert.ToDouble(araystring[1]), Convert.ToDouble(araystring[2]), Convert.ToDouble(araystring[3]), Convert.ToDouble(araystring[4]), Convert.ToDouble(araystring[5]), Convert.ToDouble(araystring[6]), datet); // ve do thi 6 diem 
                    
                    if (modefile == true)
                     {
@@ -230,12 +231,12 @@ namespace GiaoTiepMpu6050
             datet = Math.Round(datet / 1000, 3);
             //Load_Data(datet.ToString());
             //i += 0.1;
-            draw(10, 13, 15, 17, 19, 20, datet);
+            draw(10, 13, 15, 17, 19, 20,21, datet);
           
         }
 
         // vẽ đồ thị ;
-        private void draw(double Data_AX,double Data_AY, double Data_AZ, double Data_Roll_x, double Data_Pitch_y, double Data_Yaw_z, double time)
+        private void draw(double Data_AX,double Data_AY, double Data_AZ, double Data_Roll_x, double Data_Pitch_y, double Data_Yaw_z,double Data_Accel, double time)
         {
             LineItem Curve_AX = ZedGraphGiaToc.GraphPane.CurveList[0] as LineItem; // khoi tao biến edit line 0 
             IPointListEdit List_AX = Curve_AX.Points as IPointListEdit;
@@ -263,6 +264,9 @@ namespace GiaoTiepMpu6050
             IPointListEdit List_Yaw_z = Curve_Yaw_z.Points as IPointListEdit;
             List_Yaw_z.Add(time, Data_Yaw_z);
 
+            LineItem Curve_Accel = ZedGraphGiaToc.GraphPane.CurveList[6] as LineItem;
+            IPointListEdit List_Accel = Curve_Accel.Points as IPointListEdit;
+            List_Accel.Add(time, Data_Accel);
 
             Scale xScale = ZedGraphGiaToc.GraphPane.XAxis.Scale;
             if (time > xScale.Max - xScale.MajorStep)
@@ -326,7 +330,7 @@ namespace GiaoTiepMpu6050
                     try
                     {
                         string[] araystring = dataread.Split(' ');
-                        draw(Convert.ToDouble(araystring[1]), Convert.ToDouble(araystring[2]), Convert.ToDouble(araystring[3]), Convert.ToDouble(araystring[4]), Convert.ToDouble(araystring[5]), Convert.ToDouble(araystring[6]), Convert.ToDouble(araystring[0])); // ve do thi 6 diem 
+                        draw(Convert.ToDouble(araystring[1]), Convert.ToDouble(araystring[2]), Convert.ToDouble(araystring[3]), Convert.ToDouble(araystring[4]), Convert.ToDouble(araystring[5]), Convert.ToDouble(araystring[6]), Convert.ToDouble(araystring[7]), Convert.ToDouble(araystring[0])); // ve do thi 6 diem 
                     }
                     catch { }
                 }
@@ -369,12 +373,14 @@ namespace GiaoTiepMpu6050
             List_Roll_x.Clear();
             List_Pitch_y.Clear();
             List_Yaw_z.Clear();
-            LineItem Ax = myPane.AddCurve("Roll x", List_Ax, Color.Blue, SymbolType.None);
-            LineItem Ay = myPane.AddCurve("Pitch y", List_Ay, Color.Red, SymbolType.None);
-            LineItem Az = myPane.AddCurve("Yaw z", List_Az, Color.Yellow, SymbolType.None);
-            LineItem Roll_x = myPane.AddCurve("Ax", List_Roll_x, Color.Violet, SymbolType.None);
-            LineItem Pitch_y = myPane.AddCurve("Ay", List_Pitch_y, Color.Tomato, SymbolType.None);
-            LineItem Yaw_z = myPane.AddCurve("Az", List_Yaw_z, Color.Turquoise, SymbolType.None);
+            List_Accel.Clear();
+            LineItem Ax = myPane.AddCurve("Ax", List_Ax, Color.Blue, SymbolType.None);
+            LineItem Ay = myPane.AddCurve("Ay", List_Ay, Color.Red, SymbolType.None);
+            LineItem Az = myPane.AddCurve("Az", List_Az, Color.Yellow, SymbolType.None);
+            LineItem Roll_x = myPane.AddCurve("Pitch_y", List_Roll_x, Color.Violet, SymbolType.None);
+            LineItem Pitch_y = myPane.AddCurve("Roll_x", List_Pitch_y, Color.Tomato, SymbolType.None);
+            LineItem Yaw_z = myPane.AddCurve("Yaw_z", List_Yaw_z, Color.Turquoise, SymbolType.None);
+            LineItem Accel = myPane.AddCurve("Accel", List_Accel, Color.Brown, SymbolType.None);
 
             myPane.XAxis.Scale.Min = 0;
             myPane.XAxis.Scale.Max = 10;
